@@ -3,20 +3,38 @@
 
 using namespace std;
 
-const int IS_PRESENT = 1;
+const int IS_PRESENT_FULL_TIME = 1;
+const int IS_PRESENT_PART_TIME = 2;
+const int HOURS_IN_FULL_DAY = 8;
+const int HOURS_IN_PART_TIME_DAY = 4;
 const int WAGE_PER_HOUR = 20;
-const int HOURS_PER_FULL_DAY = 8;
+
+int getWorkingHours();
 
 int main()
 {
-    srand(time(0));
     cout << "WELCOME TO EMPLOYEE WAGE COMPUTATION PROGRAM" << endl;
-    
-    int employeeAttendance = rand() % 2;
-    employeeAttendance == IS_PRESENT ? cout << "Employee Is Present" << endl : cout << "Employee Is Absent" << endl;
-    
-    int employeeWageForTheDay = WAGE_PER_HOUR * HOURS_PER_FULL_DAY * employeeAttendance;
+
+    int employeeWageForTheDay = WAGE_PER_HOUR * getWorkingHours();
     cout << "Wage for the day = " << employeeWageForTheDay << endl;
 
     return 0;
+}
+
+int getWorkingHours()
+{
+    srand(time(0));
+    int employeeAttendance = rand() % 3;
+    switch (employeeAttendance)
+    {
+    case IS_PRESENT_FULL_TIME:
+        cout << "Employee is Present Full Time" << endl;
+        return HOURS_IN_FULL_DAY;
+    case IS_PRESENT_PART_TIME:
+        cout << "Employee is Present Part Time" << endl;
+        return HOURS_IN_PART_TIME_DAY;
+    default:
+        cout << "Employee is Absent" << endl;
+        return 0;
+    }
 }
