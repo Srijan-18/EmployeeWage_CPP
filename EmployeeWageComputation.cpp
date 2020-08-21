@@ -42,12 +42,12 @@ struct CompanyDetails
 
     CompanyDetails(string name, int wagePerHour, int maxWorkingDaysInAMonth, int maxWorkingHoursInAMonth, int numOfEmployees)
     {
-        this -> companyName = name;
-        this -> employees = new Employee[numOfEmployees];
-        this -> wagePerHour = wagePerHour;
-        this -> maxWorkingDaysInAMonth = maxWorkingDaysInAMonth;
-        this -> maxWorkingHoursInAMonth = maxWorkingHoursInAMonth;
-        this -> balanceForCompany = 0;
+        this->companyName = name;
+        this->employees = new Employee[numOfEmployees];
+        this->wagePerHour = wagePerHour;
+        this->maxWorkingDaysInAMonth = maxWorkingDaysInAMonth;
+        this->maxWorkingHoursInAMonth = maxWorkingHoursInAMonth;
+        this->balanceForCompany = 0;
     }
 };
 
@@ -55,7 +55,8 @@ int getWorkingHours();
 void writeInFile(string, string, string, string, string, string, string, string);
 void getEmployeeNames(Employee[], int);
 int getNumberOfMonths();
-Employee loadAndReturnUpdatedEmployeeInformation(int, int, CompanyDetails*);
+Employee loadAndReturnUpdatedEmployeeInformation(int, int, CompanyDetails *);
+int getTotalWageByCompanyName(vector<CompanyDetails>);
 
 int main()
 {
@@ -81,15 +82,14 @@ int main()
         cout << "Enter the number of employees: ";
         cin >> numOfEmployees;
         CompanyDetails company(name, wagePerHour, maxDays, maxHours, numOfEmployees);
-        
+
         for (int employeeCount = 0; employeeCount < numOfEmployees; employeeCount++)
             company.employees[employeeCount] = Employee(company.maxWorkingDaysInAMonth * MAX_NUM_OF_MONTHS, company.companyName);
 
         getEmployeeNames(company.employees, numOfEmployees);
 
         for (int employeeCount = 0; employeeCount < numOfEmployees; employeeCount++)
-        {   
-            cout << "COMPANY BALANCE IN MAIN --> " << company.balanceForCompany << endl;
+        {
             Employee currentEmployee = company.employees[employeeCount];
             while (currentEmployee.numOfMonths < MAX_NUM_OF_MONTHS)
             {
@@ -99,13 +99,19 @@ int main()
                 currentEmployee.totalWorkedHoursInAMonth = 0;
                 company.employees[employeeCount] = currentEmployee;
                 currentEmployee = loadAndReturnUpdatedEmployeeInformation(daysWorkedInPreviousMonth, employeeCount, &company);
-                cout << "COMPANY BALANCE IN MAIN AFTER A MONTH --> " << company.balanceForCompany << endl;
             }
         }
         companies.push_back(company);
-        cout << "Enter 1 to add a new company , Any other key to stop" << endl
+    menu:
+        cout << "\nEnter 1 to add a new company \nEnter 2 to get balance by company name \nAny other key to stop" << endl
              << "Your Choice : ";
         cin >> choice;
+        if (choice == 2)
+        {
+            int totalWage = getTotalWageByCompanyName(companies);
+            totalWage != -1 ? cout << "\nTotal wage is : " << totalWage << endl : cout << "\nNo such Company in records" << endl;
+            goto menu;
+        }
     }
     return 0;
 }
@@ -132,7 +138,7 @@ void getEmployeeNames(Employee employees[], int numOfEmployees)
 {
     for (int employeeCount = 0; employeeCount < numOfEmployees; employeeCount++)
     {
-        cout << "Enter the Name of Employee Number " << employeeCount + 1 << " : ";
+        cout << "\nEnter the Name of Employee Number " << employeeCount + 1 << " : ";
         cin >> employees[employeeCount].employeeName;
     }
 }
@@ -140,12 +146,12 @@ void getEmployeeNames(Employee employees[], int numOfEmployees)
 int getNumberOfMonths()
 {
     int months;
-    cout << "Enter Number Of Months To Calculate Wage For: ";
+    cout << "\nEnter Number Of Months To Calculate Wage For: ";
     cin >> months;
     return months;
 }
 
-Employee loadAndReturnUpdatedEmployeeInformation(int daysWorkedInPreviousMonth, int employeeCount, CompanyDetails* company)
+Employee loadAndReturnUpdatedEmployeeInformation(int daysWorkedInPreviousMonth, int employeeCount, CompanyDetails *company)
 {
     Employee currentEmployee = (*company).employees[employeeCount];
     while (currentEmployee.totalWorkedDaysInAMonth < (*company).maxWorkingDaysInAMonth && currentEmployee.totalWorkedHoursInAMonth < (*company).maxWorkingHoursInAMonth)
@@ -167,6 +173,21 @@ Employee loadAndReturnUpdatedEmployeeInformation(int daysWorkedInPreviousMonth, 
     currentEmployee.numOfMonths++;
     (*company).employees[employeeCount] = currentEmployee;
     return currentEmployee;
+}
+
+int getTotalWageByCompanyName(vector<CompanyDetails> companies)
+{
+    string companyName;
+    cout << "\nEnter the name of the company: ";
+    cin >> companyName;
+    int totalWage = -1;
+    for (int companyCounter = 0; companyCounter < companies.size(); companyCounter++)
+        if (companies[companyCounter].companyName.compare(companyName) == 0)
+        {
+            totalWage = companies[companyCounter].balanceForCompany;
+            break;
+        }
+    return totalWage;
 }
 
 void writeInFile(string companyName, string employeeName, string monthCount, string dayCount, string hoursWorkedInDay, string wageForDay, string totalWage, string balanceForCompany)
