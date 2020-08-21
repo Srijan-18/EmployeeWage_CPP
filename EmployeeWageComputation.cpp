@@ -100,9 +100,7 @@ int main()
                 company.employees[employeeCount] = currentEmployee;
                 currentEmployee = loadAndReturnUpdatedEmployeeInformation(daysWorkedInPreviousMonth, employeeCount, &company);
                 cout << "COMPANY BALANCE IN MAIN AFTER A MONTH --> " << company.balanceForCompany << endl;
-                //cout << "MONTH IN MAIN METHOD -->" << currentEmployee.numOfMonths << endl;
             }
-            //company.employees[employeeCount] = currentEmployee;
         }
         companies.push_back(company);
         cout << "Enter 1 to add a new company , Any other key to stop" << endl
