@@ -66,7 +66,7 @@ int getWorkingHours();
 void writeInFile(string, string, string, string, string, string, string, string);
 void getEmployeeNames(Employee[], int);
 int getNumberOfMonths();
-Employee loadAndReturnUpdatedEmployeeInformation(int, int, CompanyDetails*);
+Employee loadAndReturnUpdatedEmployeeInformation(int, int, CompanyDetails *);
 int getTotalWageByCompanyName(vector<CompanyDetails>);
 vector<EmployeeInformation> readFromFile();
 void printDataOnBasisOfMonthlyWage(vector<EmployeeInformation>);
@@ -75,6 +75,7 @@ vector<EmployeeInformation> sortByMonthlyWageForGivenMonth(vector<EmployeeInform
 vector<EmployeeInformation> getDatawithUniqueNames(vector<EmployeeInformation>);
 vector<EmployeeInformation> sortByDailyWageForGivenMonth(vector<EmployeeInformation>, int);
 void printDataOnBasisOfMaxDailyWage(vector<EmployeeInformation>);
+void printDataForParticularWagePerHour(vector<EmployeeInformation>, int);
 
 int main()
 {
@@ -87,23 +88,23 @@ int main()
     while (choice == 1)
     {
         string name;
-        int maxDays, maxHours, wagePerHour, numOfEmployees, totalWage, selectedMonth;
-        cout << "Enter Name of the company: ";
+        int maxDays, maxHours, wagePerHour, numOfEmployees, totalWage, givenMonth, givenWagePerHour;
+        cout << "\nEnter Name Of The Company: ";
         cin >> name;
-        cout << "\nEnter Wage Per hour for " << name << " : ";
+        cout << "\nEnter Wage Per Hour For " << name << " : ";
         cin >> wagePerHour;
-        cout << "\nEnter Working Days Per Month for " << name << " : ";
+        cout << "\nEnter Working Days Per Month For " << name << " : ";
         cin >> maxDays;
-        cout << "\nEnter Working Hours Per Month for " << name << " : ";
+        cout << "\nEnter Working Hours Per Month For " << name << " : ";
         cin >> maxHours;
         const int MAX_NUM_OF_MONTHS = getNumberOfMonths();
-        cout << "\nEnter the number of employees: ";
+        cout << "\nEnter The Number Of Employees: ";
         cin >> numOfEmployees;
         CompanyDetails company(name, wagePerHour, maxDays, maxHours, numOfEmployees);
         vector<EmployeeInformation> employeeInformation;
 
-        for (int employeeCount = 0; employeeCount < numOfEmployees; employeeCount++)
-            company.employees[employeeCount] = Employee(company.maxWorkingDaysInAMonth * MAX_NUM_OF_MONTHS, company.companyName);
+        for (int employeeCounter = 0; employeeCounter < numOfEmployees; employeeCounter++)
+            company.employees[employeeCounter] = Employee(company.maxWorkingDaysInAMonth * MAX_NUM_OF_MONTHS, company.companyName);
 
         getEmployeeNames(company.employees, numOfEmployees);
 
@@ -122,36 +123,43 @@ int main()
         }
         companies.push_back(company);
     menu:
-        cout << "\nEnter 1 to add a new company \nEnter 2 to get balance by company name \nEnter 3 to sort by monthly wage.\nEnter 4 to sort by daily wage .\nAny other key to stop" << endl
+        cout << "\nEnter 1 To Add A New Company \nEnter 2 To Get Total Wages By Company Name \nEnter 3 To Sort By Monthly Wage.\nEnter 4 To Sort By Daily Wage." 
+             << "\nEnter 5 To Search Employees With Particular Wage Per Hour.\nAny Other Key To Stop" << endl
              << "Your Choice : ";
         cin >> choice;
-        switch(choice)
+        switch (choice)
         {
-            case 1:
+        case 1:
             break;
-            case 2:
-                totalWage = getTotalWageByCompanyName(companies);
-                totalWage != -1 ? cout << "\nTotal wage is: " << totalWage << endl : cout << "\nNo such Company in records" << endl;
-                goto menu;
-                break;
-            case 3:
-                cout << "Enter Month Number: ";
-                cin >> selectedMonth;
-                employeeInformation = readFromFile();
-                employeeInformation = sortByMonthlyWageForGivenMonth(employeeInformation, selectedMonth);
-                printDataOnBasisOfMonthlyWage(employeeInformation);
-                goto menu;
-            case 4:
-                cout << "Enter Month Number: ";
-                cin >> selectedMonth;
-                employeeInformation = readFromFile();
-                employeeInformation = sortByDailyWageForGivenMonth(employeeInformation, selectedMonth);
-                printDataOnBasisOfMaxDailyWage(employeeInformation);
-                goto menu;
-            default :
-            break;    
+        case 2:
+            totalWage = getTotalWageByCompanyName(companies);
+            totalWage != -1 ? cout << "\nTotal Wage Is: " << totalWage << endl : cout << "\nNO SUCH COMPANY IN RECORDS" << endl;
+            goto menu;
+            break;
+        case 3:
+            cout << "\nEnter Month Number: ";
+            cin >> givenMonth;
+            employeeInformation = readFromFile();
+            employeeInformation = sortByMonthlyWageForGivenMonth(employeeInformation, givenMonth);
+            printDataOnBasisOfMonthlyWage(employeeInformation);
+            goto menu;
+        case 4:
+            cout << "\nEnter Month Number: ";
+            cin >> givenMonth;
+            employeeInformation = readFromFile();
+            employeeInformation = sortByDailyWageForGivenMonth(employeeInformation, givenMonth);
+            printDataOnBasisOfMaxDailyWage(employeeInformation);
+            goto menu;
+        case 5:
+            cout << "\nEnter Wage Per Hour: ";
+            cin >> givenWagePerHour;
+            employeeInformation = readFromFile();
+            printDataForParticularWagePerHour(employeeInformation, givenWagePerHour);
+            goto menu;    
+        default:
+            break;
         }
-    } 
+    }
     return 0;
 }
 
@@ -175,10 +183,10 @@ int getWorkingHours()
 
 void getEmployeeNames(Employee employees[], int numOfEmployees)
 {
-    for (int employeeCount = 0; employeeCount < numOfEmployees; employeeCount++)
+    for (int employeeCounter = 0; employeeCounter < numOfEmployees; employeeCounter++)
     {
-        cout << "\nEnter the Name of Employee Number " << employeeCount + 1 << " : ";
-        cin >> employees[employeeCount].employeeName;
+        cout << "\nEnter the Name of Employee Number " << employeeCounter + 1 << " : ";
+        cin >> employees[employeeCounter].employeeName;
     }
 }
 
@@ -275,17 +283,16 @@ vector<EmployeeInformation> readFromFile()
 }
 
 vector<EmployeeInformation> sortByMonthlyWageForGivenMonth(vector<EmployeeInformation> employeesInformation, int givenMonth)
-{   
+{
     bool changesMade = false;
-    for (int i = 0; i < employeesInformation.size(); i++)
+    for (int bSortOuter = 0; bSortOuter < employeesInformation.size(); bSortOuter++)
     {
-         for (int j = i; j < employeesInformation.size(); j++)
-            if (employeesInformation[i].monthlyWage < employeesInformation[j].monthlyWage 
-                && employeesInformation[j].month == givenMonth)
+        for (int bSortInner = bSortOuter; bSortInner < employeesInformation.size(); bSortInner++)
+            if (employeesInformation[bSortOuter].monthlyWage < employeesInformation[bSortInner].monthlyWage && employeesInformation[bSortInner].month == givenMonth)
             {
-                swap(employeesInformation[i], employeesInformation[j]);
+                swap(employeesInformation[bSortOuter], employeesInformation[bSortInner]);
                 changesMade = true;
-            }   
+            }
     }
 
     if (!changesMade)
@@ -293,7 +300,7 @@ vector<EmployeeInformation> sortByMonthlyWageForGivenMonth(vector<EmployeeInform
         vector<EmployeeInformation> temp;
         return temp;
     }
-    employeesInformation = getDatawithUniqueNames(employeesInformation);           
+    employeesInformation = getDatawithUniqueNames(employeesInformation);
     return employeesInformation;
 }
 
@@ -302,16 +309,18 @@ bool isPresent(vector<EmployeeInformation> employeesInformationTemp, EmployeeInf
     bool isFound = false;
     int indexCounter;
     for (indexCounter = 0; indexCounter < employeesInformationTemp.size(); indexCounter++)
-        if (employeesInformationTemp[indexCounter].employeeName == employee.employeeName)    
+        if (employeesInformationTemp[indexCounter].employeeName == employee.employeeName)
             isFound = true;
     return isFound;
 }
 
-vector<EmployeeInformation> getDatawithUniqueNames(vector<EmployeeInformation> employees) {
+vector<EmployeeInformation> getDatawithUniqueNames(vector<EmployeeInformation> employees)
+{
     vector<EmployeeInformation> employeesInformationTemp;
-    for (int i = 0; i < employees.size(); i++){
-        if(!isPresent(employeesInformationTemp, employees[i]) &&  employees[i].employeeName != "\0")
-            employeesInformationTemp.push_back(employees[i]);
+    for (int employeeCounter = 0; employeeCounter < employees.size(); employeeCounter++)
+    {
+        if (!isPresent(employeesInformationTemp, employees[employeeCounter]) && employees[employeeCounter].employeeName != "\0")
+            employeesInformationTemp.push_back(employees[employeeCounter]);
     }
     return employeesInformationTemp;
 }
@@ -323,22 +332,23 @@ void printDataOnBasisOfMonthlyWage(vector<EmployeeInformation> employeesInformat
         cout << "\nNO RECORDS FOR ENTERED MONTH" << endl;
         return;
     }
-    for (int i = 0; i < employeesInformation.size(); i++)
-    cout << "COMPANY NAME: " << employeesInformation[i].companyName <<"\t\tEMPLOYE NAME : " << employeesInformation[i].employeeName <<"\t\tMAX MONTHLY INCOME: " << employeesInformation[i].monthlyWage << endl;
+    for (int employeeCounter = 0; employeeCounter < employeesInformation.size(); employeeCounter++)
+        cout << "COMPANY NAME: " << employeesInformation[employeeCounter].companyName 
+             << "\t\tEMPLOYE NAME : " << employeesInformation[employeeCounter].employeeName 
+             << "\t\tMAX MONTHLY INCOME: " << employeesInformation[employeeCounter].monthlyWage << endl;
 }
 
 vector<EmployeeInformation> sortByDailyWageForGivenMonth(vector<EmployeeInformation> employeesInformation, int givenMonth)
-{   
+{
     bool changesMade = false;
-    for (int i = 0; i < employeesInformation.size(); i++)
+    for (int bSortOuter = 0; bSortOuter < employeesInformation.size(); bSortOuter++)
     {
-         for (int j = i; j < employeesInformation.size(); j++)
-            if (employeesInformation[i].wageForDay < employeesInformation[j].wageForDay 
-                && employeesInformation[j].month == givenMonth)
+        for (int bSortInner = bSortOuter; bSortInner < employeesInformation.size(); bSortInner++)
+            if (employeesInformation[bSortOuter].wageForDay < employeesInformation[bSortInner].wageForDay && employeesInformation[bSortInner].month == givenMonth)
             {
-                swap(employeesInformation[i], employeesInformation[j]);
+                swap(employeesInformation[bSortOuter], employeesInformation[bSortInner]);
                 changesMade = true;
-            }   
+            }
     }
 
     if (!changesMade)
@@ -346,7 +356,7 @@ vector<EmployeeInformation> sortByDailyWageForGivenMonth(vector<EmployeeInformat
         vector<EmployeeInformation> temp;
         return temp;
     }
-    employeesInformation = getDatawithUniqueNames(employeesInformation);           
+    employeesInformation = getDatawithUniqueNames(employeesInformation);
     return employeesInformation;
 }
 
@@ -357,6 +367,30 @@ void printDataOnBasisOfMaxDailyWage(vector<EmployeeInformation> employeesInforma
         cout << "\nNO RECORDS FOR ENTERED MONTH" << endl;
         return;
     }
-    for (int i = 0; i < employeesInformation.size(); i++)
-    cout << "COMPANY NAME: " << employeesInformation[i].companyName <<"\t\tEMPLOYE NAME : " << employeesInformation[i].employeeName <<"\t\tMAX DAILY INCOME FOR GIVEN MONTH: " << employeesInformation[i].monthlyWage << endl;
+    for (int employeeCounter = 0; employeeCounter < employeesInformation.size(); employeeCounter++)
+        cout << "COMPANY NAME: " << employeesInformation[employeeCounter].companyName 
+             << "\t\tEMPLOYE NAME : " << employeesInformation[employeeCounter].employeeName 
+             << "\t\tMAX DAILY INCOME FOR GIVEN MONTH: " << employeesInformation[employeeCounter].wageForDay << endl;
+}
+
+void printDataForParticularWagePerHour(vector<EmployeeInformation> employeesInformation, int givenWage)
+{
+    vector<EmployeeInformation> employeesInformationTemp;
+    for (int employeeCounter = 0; employeeCounter < employeesInformation.size(); employeeCounter++)
+    {
+        int wagePerHourForCurrentEmployee;
+        employeesInformation[employeeCounter].wageForDay == 0 ? wagePerHourForCurrentEmployee = 0 : wagePerHourForCurrentEmployee = (employeesInformation[employeeCounter].wageForDay / employeesInformation[employeeCounter].hoursForDay);
+        if (wagePerHourForCurrentEmployee == givenWage)
+            employeesInformationTemp.push_back(employeesInformation[employeeCounter]);
+    }
+    if (employeesInformationTemp.size() == 0)
+    {
+        cout << "\n NO EMPLOYEE WITH SUCH WAGE PRESENT" << endl;
+        return;
+    }
+    employeesInformationTemp = getDatawithUniqueNames(employeesInformationTemp);
+    for (int employeeCount = 0; employeeCount < employeesInformationTemp.size(); employeeCount++)
+        cout << "EMPLOYEE NAME: " << employeesInformationTemp[employeeCount].employeeName
+             << "\t\tWAGE PER HOUR: " << employeesInformationTemp[employeeCount].wageForDay / employeesInformationTemp[employeeCount].hoursForDay
+             << endl;
 }
